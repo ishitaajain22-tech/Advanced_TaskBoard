@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Advanced Task Management Board</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="day">
+    <div class="board">
+        <div class="header">
+            <div class="header-top">
+                <div class="logo main-heading">
+                    🎯 Advanced Task Board
+                </div>
+                <div class="controls">
+                    <button class="theme-toggle" onclick="toggleTheme()">🌙 Theme</button>
+                    <button class="sound-toggle" onclick="toggleSound()">🔊 Sound</button>
+                    <button class="stats-btn" onclick="showStats()">📊 Stats</button>
+                    <button class="export-btn" onclick="exportTasks()">📥 Export</button>
+                </div>
+            </div>
+
+            <div class="search-filter">
+                <input type="text" class="search-input" placeholder="Search tasks..." id="search-input">
+                <select class="filter-select" id="priority-filter">
+                    <option value="">All Priorities</option>
+                    <option value="high">High Priority</option>
+                    <option value="medium">Medium Priority</option>
+                    <option value="low">Low Priority</option>
+                </select>
+                <select class="filter-select" id="category-filter">
+                    <option value="">All Categories</option>
+                    <option value="work">Work</option>
+                    <option value="personal">Personal</option>
+                    <option value="study">Study</option>
+                    <option value="health">Health</option>
+                </select>
+            </div>
+
+            <div class="undo-redo">
+                <button class="undo-btn" onclick="undo()" disabled>↶ Undo</button>
+                <button class="redo-btn" onclick="redo()" disabled>↷ Redo</button>
+            </div>
+
+            <div class="bulk-actions" id="bulk-actions">
+                <button onclick="bulkMove('col2')">Move to TO-DO</button>
+                <button onclick="bulkMove('col1')">Move to PENDING</button>
+                <button onclick="bulkMove('col3')">Move to IN-PROCESS</button>
+                <button onclick="bulkMove('col4')">Move to DONE</button>
+                <button onclick="bulkDelete()">Delete Selected</button>
+                <button onclick="clearSelection()">Clear Selection</button>
+            </div>
+
+            <form class="task-form" id="todo-form">
+                <div class="form-group">
+                    <label>Task</label>
+                    <input type="text" class="task-input" placeholder="Add task..." id="todo-in" required>
+                </div>
+                <div class="form-group">
+                    <label>Priority</label>
+                    <select class="priority-select" id="priority">
+                        <option value="medium">Medium</option>
+                        <option value="high">High</option>
+                        <option value="low">Low</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Category</label>
+                    <select class="category-select" id="category">
+                        <option value="work">Work</option>
+                        <option value="personal">Personal</option>
+                        <option value="study">Study</option>
+                        <option value="health">Health</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Due Date</label>
+                    <input type="date" class="due-date" id="due-date">
+                </div>
+                <div class="form-group">
+                    <label>Description</label>
+                    <textarea id="task-description" placeholder="Task details..." style="padding: 8px; border: 2px solid #ddd; border-radius: 8px; resize: vertical; width: 150px; height: 40px;"></textarea>
+                </div>
+                <button type="submit" class="add-btn">+ Add Task</button>
+            </form>
+        </div>
+
+        <div class="columns-container">
+            <div class="columns">
+                <div class="col" id="todo-col">
+                    <div class="col-header">
+                        <h3 class="heading">TO-DO</h3>
+                        <span class="task-count">0</span>
+                    </div>
+                </div>
+                <div class="col" id="backlog-col">
+                    <div class="col-header">
+                        <h3 class="heading">PENDING</h3>
+                        <span class="task-count">0</span>
+                    </div>
+                </div>
+                <div class="col" id="in-process-col">
+                    <div class="col-header">
+                        <h3 class="heading">IN-PROCESS</h3>
+                        <span class="task-count">0</span>
+                    </div>
+                </div>
+                <div class="col" id="done-col">
+                    <div class="col-header">
+                        <h3 class="heading">DONE</h3>
+                        <span class="task-count">0</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Stats Modal -->
+    <div id="stats-modal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>📊 Task Statistics</h2>
+            <div class="stats-grid" id="stats-grid">
+                <!-- Stats will be populated here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Task Modal -->
+    <div id="edit-modal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>✏️ Edit Task</h2>
+            <form id="edit-form">
+                <div style="margin-bottom: 15px;">
+                    <label>Task Title:</label>
+                    <input type="text" id="edit-title" style="width: 100%; padding: 10px; margin-top: 5px; border: 1px solid #ddd; border-radius: 4px;">
+                </div>
+                <div style="margin-bottom: 15px;">
+                    <label>Description:</label>
+                    <textarea id="edit-desc" style="width: 100%; padding: 10px; margin-top: 5px; border: 1px solid #ddd; border-radius: 4px; height: 80px;"></textarea>
+                </div>
+                <div style="margin-bottom: 15px;">
+                    <label>Priority:</label>
+                    <select id="edit-priority" style="width: 100%; padding: 10px; margin-top: 5px; border: 1px solid #ddd; border-radius: 4px;">
+                        <option value="high">High</option>
+                        <option value="medium">Medium</option>
+                        <option value="low">Low</option>
+                    </select>
+                </div>
+                <div style="margin-bottom: 15px;">
+                    <label>Category:</label>
+                    <select id="edit-category" style="width: 100%; padding: 10px; margin-top: 5px; border: 1px solid #ddd; border-radius: 4px;">
+                        <option value="work">Work</option>
+                        <option value="personal">Personal</option>
+                        <option value="study">Study</option>
+                        <option value="health">Health</option>
+                    </select>
+                </div>
+                <div style="margin-bottom: 15px;">
+                    <label>Due Date:</label>
+                    <input type="date" id="edit-due" style="width: 100%; padding: 10px; margin-top: 5px; border: 1px solid #ddd; border-radius: 4px;">
+                </div>
+                <div style="margin-bottom: 15px;">
+                    <label>Progress:</label>
+                    <input type="range" id="edit-progress" min="0" max="100" step="25" style="width: 100%; margin-top: 5px;">
+                    <span id="progress-value">0%</span>
+                </div>
+                <button type="submit" style="padding: 10px 20px; background: var(--primary-color); color: white; border: none; border-radius: 4px; cursor: pointer;">Save Changes</button>
+            </form>
+        </div>
+    </div>
+
+    <div class="notification" id="notification"></div>
+<script src="index.js"></script>
+</body>
+</html>
