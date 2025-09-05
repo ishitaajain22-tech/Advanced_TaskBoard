@@ -164,8 +164,8 @@ The application is highly customizable:
 ## 👨‍💻 Developer
 
 **Your Name**
-- GitHub: [@yourusername](https://github.com/yourusername)
-- LinkedIn: [Your LinkedIn](https://linkedin.com/in/yourprofile)
+- GitHub: (https://github.com/ishitaajain22-tech)
+- LinkedIn: https://www.linkedin.com/in/ishita-jain-8091581b2/
 
 ---
 
